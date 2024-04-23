@@ -9,6 +9,7 @@
 mod utils;
 
 mod attributes;
+mod cloneref;
 mod deprecations;
 mod frompyobject;
 mod konst;
@@ -21,6 +22,7 @@ mod pyimpl;
 mod pymethod;
 mod quotes;
 
+pub use cloneref::build_derive_cloneref;
 pub use frompyobject::build_derive_from_pyobject;
 pub use module::{pymodule_function_impl, pymodule_module_impl, PyModuleOptions};
 pub use pyclass::{build_py_class, build_py_enum, PyClassArgs};
