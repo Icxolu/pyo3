@@ -383,6 +383,23 @@ where
     }
 }
 
+/// A version of [`Clone`] with the additional guarantee that the GIL is held.
+pub trait CloneRef<'py>: Sized {
+    /// Returns a copy of the value.
+    fn clone_ref(&self, py: Python<'py>) -> Self;
+}
+
+// Every item that can be cloned independently of the GIL can also be cloned
+// with the GIL held.
+impl<'py, T> CloneRef<'py> for T
+where
+    T: Clone,
+{
+    fn clone_ref(&self, _py: Python<'py>) -> Self {
+        self.clone()
+    }
+}
+
 /// Trait implemented by Python object types that allow a checked downcast.
 /// If `T` implements `PyTryFrom`, we can convert `&PyAny` to `&T`.
 ///
