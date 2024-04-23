@@ -765,7 +765,7 @@ pub fn impl_py_getter_def(
             quotes::map_result_into_ptr(
                 quotes::ok_wrap(
                     quote! {
-                        ::std::clone::Clone::clone(&(#slf.#field_token))
+                        #pyo3_path::conversion::CloneRef::clone_ref(&(#slf.#field_token), py)
                     },
                     ctx,
                 ),
