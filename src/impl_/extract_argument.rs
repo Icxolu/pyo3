@@ -3,8 +3,8 @@ use crate::{
     ffi,
     pyclass::boolean_struct::False,
     types::{any::PyAnyMethods, dict::PyDictMethods, tuple::PyTupleMethods, PyDict, PyTuple},
-    Borrowed, Bound, FromPyObject, PyAny, PyClass, PyErr, PyRef, PyRefMut, PyResult, PyTypeCheck,
-    Python,
+    Borrowed, Bound, DowncastError, FromPyObject, PyAny, PyClass, PyErr, PyRef, PyRefMut, PyResult,
+    PyTypeCheck, Python,
 };
 
 /// Helper type used to keep implementation more concise.
@@ -22,7 +22,11 @@ type PyArg<'py> = Borrowed<'py, 'py, PyAny>;
 /// There exists a trivial blanket implementation for `T: FromPyObject` with `Holder = ()`.
 pub trait PyFunctionArgument<'a, 'py>: Sized + 'a {
     type Holder: FunctionArgumentHolder;
-    fn extract(obj: &'a Bound<'py, PyAny>, holder: &'a mut Self::Holder) -> PyResult<Self>;
+    type Error: Into<PyErr>;
+    fn extract(
+        obj: &'a Bound<'py, PyAny>,
+        holder: &'a mut Self::Holder,
+    ) -> Result<Self, Self::Error>;
 }
 
 impl<'a, 'py, T> PyFunctionArgument<'a, 'py> for T
@@ -30,9 +34,10 @@ where
     T: FromPyObject<'a, 'py> + 'a,
 {
     type Holder = ();
+    type Error = T::Error;
 
     #[inline]
-    fn extract(obj: &'a Bound<'py, PyAny>, _: &'a mut ()) -> PyResult<Self> {
+    fn extract(obj: &'a Bound<'py, PyAny>, _: &'a mut ()) -> Result<Self, Self::Error> {
         obj.extract()
     }
 }
@@ -42,10 +47,11 @@ where
     T: PyTypeCheck,
 {
     type Holder = Option<()>;
+    type Error = DowncastError<'a, 'py>;
 
     #[inline]
-    fn extract(obj: &'a Bound<'py, PyAny>, _: &'a mut Option<()>) -> PyResult<Self> {
-        obj.downcast().map_err(Into::into)
+    fn extract(obj: &'a Bound<'py, PyAny>, _: &'a mut Option<()>) -> Result<Self, Self::Error> {
+        obj.downcast()
     }
 }
 
@@ -54,9 +60,10 @@ where
     T: PyTypeCheck,
 {
     type Holder = ();
+    type Error = DowncastError<'a, 'py>;
 
     #[inline]
-    fn extract(obj: &'a Bound<'py, PyAny>, _: &'a mut ()) -> PyResult<Self> {
+    fn extract(obj: &'a Bound<'py, PyAny>, _: &'a mut ()) -> Result<Self, Self::Error> {
         if obj.is_none() {
             Ok(None)
         } else {
@@ -120,7 +127,7 @@ where
 {
     match PyFunctionArgument::extract(obj, holder) {
         Ok(value) => Ok(value),
-        Err(e) => Err(argument_extraction_error(obj.py(), arg_name, e)),
+        Err(e) => Err(argument_extraction_error(obj.py(), arg_name, e.into())),
     }
 }
 

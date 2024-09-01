@@ -1,7 +1,7 @@
 use crate::Bound;
 use crate::{
     conversion::IntoPyObject, ffi, types::any::PyAnyMethods, AsPyPointer, Borrowed, BoundObject,
-    FromPyObject, IntoPy, PyAny, PyObject, PyResult, Python, ToPyObject,
+    FromPyObject, IntoPy, PyAny, PyObject, Python, ToPyObject,
 };
 
 /// `Option::Some<T>` is converted like `T`.
@@ -63,7 +63,9 @@ impl<'a, 'py, T> FromPyObject<'a, 'py> for Option<T>
 where
     T: FromPyObject<'a, 'py>,
 {
-    fn extract(obj: Borrowed<'a, 'py, PyAny>) -> PyResult<Self> {
+    type Error = T::Error;
+
+    fn extract(obj: Borrowed<'a, 'py, PyAny>) -> Result<Self, Self::Error> {
         if obj.is_none() {
             Ok(None)
         } else {

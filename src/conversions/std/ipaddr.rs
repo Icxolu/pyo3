@@ -7,12 +7,13 @@ use crate::types::any::PyAnyMethods;
 use crate::types::string::PyStringMethods;
 use crate::types::PyType;
 use crate::{
-    intern, Borrowed, Bound, FromPyObject, IntoPy, Py, PyAny, PyErr, PyObject, PyResult, Python,
-    ToPyObject,
+    intern, Borrowed, Bound, FromPyObject, IntoPy, Py, PyAny, PyErr, PyObject, Python, ToPyObject,
 };
 
 impl FromPyObject<'_, '_> for IpAddr {
-    fn extract(obj: Borrowed<'_, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(obj: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         match obj.getattr(intern!(obj.py(), "packed")) {
             Ok(packed) => {
                 if let Ok(packed) = packed.extract::<[u8; 4]>() {

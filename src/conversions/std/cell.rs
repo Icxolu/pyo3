@@ -1,8 +1,7 @@
 use std::cell::Cell;
 
 use crate::{
-    conversion::IntoPyObject, Borrowed, FromPyObject, IntoPy, PyAny, PyObject, PyResult, Python,
-    ToPyObject,
+    conversion::IntoPyObject, Borrowed, FromPyObject, IntoPy, PyAny, PyObject, Python, ToPyObject,
 };
 
 impl<T: Copy + ToPyObject> ToPyObject for Cell<T> {
@@ -40,7 +39,9 @@ impl<'a, 'py, T: Copy + IntoPyObject<'py>> IntoPyObject<'py> for &'a Cell<T> {
 }
 
 impl<'a, 'py, T: FromPyObject<'a, 'py>> FromPyObject<'a, 'py> for Cell<T> {
-    fn extract(ob: Borrowed<'a, 'py, PyAny>) -> PyResult<Self> {
+    type Error = T::Error;
+
+    fn extract(ob: Borrowed<'a, 'py, PyAny>) -> Result<Self, Self::Error> {
         ob.extract().map(Cell::new)
     }
 }

@@ -456,16 +456,18 @@ impl<'a, 'py, T> IntoPyObject<'py> for &'a Py<T> {
 /// [`Cow::Owned`]: std::borrow::Cow::Owned
 
 pub trait FromPyObject<'a, 'py>: Sized {
+    /// The type returned in the event of a conversion error.
+    type Error: Into<PyErr>;
     /// Extracts `Self` from the bound smart pointer `obj`.
     ///
     /// Users are advised against calling this method directly: instead, use this via
     /// [`Bound<'_, PyAny>::extract`] or [`Py::extract`].
-    fn extract(obj: Borrowed<'a, 'py, PyAny>) -> PyResult<Self>;
+    fn extract(obj: Borrowed<'a, 'py, PyAny>) -> Result<Self, Self::Error>;
 
     /// Deprecated name for [`FromPyObject::extract`]
     #[deprecated(since = "0.23.0", note = "replaced by `FromPyObject::extract`")]
     fn extract_bound(ob: &'a Bound<'py, PyAny>) -> PyResult<Self> {
-        Self::extract(ob.as_borrowed())
+        Self::extract(ob.as_borrowed()).map_err(Into::into)
     }
 
     /// Extracts the type hint information for this type when it appears as an argument.
@@ -501,7 +503,9 @@ pub trait FromPyObject<'a, 'py>: Sized {
 /// where
 ///     T: FromPyObject<'a, 'py>
 /// {
-///     fn extract(obj: Borrowed<'a, 'py, PyAny>) -> PyResult<Self> {
+///     type Error = T::Error;
+///
+///     fn extract(obj: Borrowed<'a, 'py, PyAny>) -> Result<Self, Self::Error> {
 ///         obj.extract().map(MyWrapper)
 ///     }
 /// }
@@ -513,10 +517,12 @@ pub trait FromPyObject<'a, 'py>: Sized {
 ///     T: FromPyObjectOwned<'py> // 👈 can only extract owned values, because each `item` below
 ///                               //    is a temporary short lived owned reference
 /// {
-///     fn extract(obj: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
+///     type Error = PyErr;
+///
+///     fn extract(obj: Borrowed<'_, 'py, PyAny>) -> Result<Self, Self::Error> {
 ///         let mut v = MyVec(Vec::new());
 ///         for item in obj.iter()? {
-///             v.0.push(item?.extract::<T>()?);
+///             v.0.push(item?.extract::<T>().map_err(Into::into)?);
 ///         }
 ///         Ok(v)
 ///     }
@@ -541,7 +547,8 @@ impl<T> FromPyObject<'_, '_> for T
 where
     T: PyClass + Clone,
 {
-    fn extract(obj: Borrowed<'_, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+    fn extract(obj: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         let bound = obj.downcast::<Self>()?;
         Ok(bound.try_borrow()?.clone())
     }
@@ -551,7 +558,8 @@ impl<'py, T> FromPyObject<'_, 'py> for PyRef<'py, T>
 where
     T: PyClass,
 {
-    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> Result<Self, Self::Error> {
         obj.downcast::<T>()?.try_borrow().map_err(Into::into)
     }
 }
@@ -560,7 +568,8 @@ impl<'py, T> FromPyObject<'_, 'py> for PyRefMut<'py, T>
 where
     T: PyClass<Frozen = False>,
 {
-    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> Result<Self, Self::Error> {
         obj.downcast::<T>()?.try_borrow_mut().map_err(Into::into)
     }
 }

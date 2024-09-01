@@ -2,13 +2,13 @@
 use crate::inspect::types::TypeInfo;
 use crate::{
     exceptions::PyTypeError, ffi, ffi_ptr_ext::FfiPtrExt, instance::Bound,
-    types::typeobject::PyTypeMethods, Borrowed, FromPyObject, IntoPy, PyAny, PyObject, PyResult,
-    Python, ToPyObject,
+    types::typeobject::PyTypeMethods, Borrowed, FromPyObject, IntoPy, PyAny, PyObject, Python,
+    ToPyObject,
 };
 
 use super::any::PyAnyMethods;
 use crate::conversion::IntoPyObject;
-use crate::BoundObject;
+use crate::{BoundObject, PyErr};
 use std::convert::Infallible;
 
 /// Represents a Python `bool`.
@@ -190,7 +190,9 @@ impl<'py> IntoPyObject<'py> for &bool {
 ///
 /// Fails with `TypeError` if the input is not a Python `bool`.
 impl FromPyObject<'_, '_> for bool {
-    fn extract(obj: Borrowed<'_, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(obj: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         let err = match obj.downcast::<PyBool>() {
             Ok(obj) => return Ok(obj.is_true()),
             Err(err) => err,
