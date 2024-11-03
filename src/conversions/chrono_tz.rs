@@ -39,7 +39,7 @@ use crate::exceptions::PyValueError;
 use crate::pybacked::PyBackedStr;
 use crate::sync::GILOnceCell;
 use crate::types::{any::PyAnyMethods, PyType};
-use crate::{intern, Borrowed, Bound, FromPyObject, Py, PyAny, PyErr, PyObject, PyResult, Python};
+use crate::{intern, Borrowed, Bound, FromPyObject, Py, PyAny, PyErr, PyObject, Python};
 #[allow(deprecated)]
 use crate::{IntoPy, ToPyObject};
 use chrono_tz::Tz;
@@ -86,7 +86,9 @@ impl<'py> IntoPyObject<'py> for &Tz {
 }
 
 impl FromPyObject<'_, '_> for Tz {
-    fn extract(ob: Borrowed<'_, '_, PyAny>) -> PyResult<Tz> {
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         Tz::from_str(
             &ob.getattr(intern!(ob.py(), "key"))?
                 .extract::<PyBackedStr>()?,

@@ -104,7 +104,9 @@ where
     A: Array,
     A::Item: FromPyObjectOwned<'py>,
 {
-    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> Result<Self, Self::Error> {
         if obj.is_instance_of::<PyString>() {
             return Err(PyTypeError::new_err("Can't extract `str` to `SmallVec`"));
         }
@@ -134,7 +136,7 @@ where
 
     let mut sv = SmallVec::with_capacity(seq.len().unwrap_or(0));
     for item in seq.try_iter()? {
-        sv.push(item?.extract::<A::Item>()?);
+        sv.push(item?.extract::<A::Item>().map_err(Into::into)?);
     }
     Ok(sv)
 }

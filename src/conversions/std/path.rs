@@ -2,7 +2,7 @@ use crate::conversion::IntoPyObject;
 use crate::ffi_ptr_ext::FfiPtrExt;
 use crate::types::any::PyAnyMethods;
 use crate::types::PyString;
-use crate::{ffi, Borrowed, Bound, FromPyObject, PyAny, PyObject, PyResult, Python};
+use crate::{ffi, Borrowed, Bound, FromPyObject, PyAny, PyErr, PyObject, Python};
 #[allow(deprecated)]
 use crate::{IntoPy, ToPyObject};
 use std::borrow::Cow;
@@ -21,7 +21,9 @@ impl ToPyObject for Path {
 // See osstr.rs for why there's no FromPyObject impl for &Path
 
 impl FromPyObject<'_, '_> for PathBuf {
-    fn extract(ob: Borrowed<'_, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         // We use os.fspath to get the underlying path as bytes or str
         let path = unsafe { ffi::PyOS_FSPath(ob.as_ptr()).assume_owned_or_err(ob.py())? };
         Ok(path.extract::<OsString>()?.into())

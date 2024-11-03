@@ -140,7 +140,9 @@ impl<'py> IntoPyObject<'py> for &Duration {
 }
 
 impl FromPyObject<'_, '_> for Duration {
-    fn extract(ob: Borrowed<'_, '_, PyAny>) -> PyResult<Duration> {
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         // Python size are much lower than rust size so we do not need bound checks.
         // 0 <= microseconds < 1000000
         // 0 <= seconds < 3600*24
@@ -224,7 +226,9 @@ impl<'py> IntoPyObject<'py> for &NaiveDate {
 }
 
 impl FromPyObject<'_, '_> for NaiveDate {
-    fn extract(ob: Borrowed<'_, '_, PyAny>) -> PyResult<NaiveDate> {
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         #[cfg(not(Py_LIMITED_API))]
         {
             let date = ob.downcast::<PyDate>()?;
@@ -301,7 +305,9 @@ impl<'py> IntoPyObject<'py> for &NaiveTime {
 }
 
 impl FromPyObject<'_, '_> for NaiveTime {
-    fn extract(ob: Borrowed<'_, '_, PyAny>) -> PyResult<NaiveTime> {
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         #[cfg(not(Py_LIMITED_API))]
         {
             let time = ob.downcast::<PyTime>()?;
@@ -382,7 +388,9 @@ impl<'py> IntoPyObject<'py> for &NaiveDateTime {
 }
 
 impl FromPyObject<'_, '_> for NaiveDateTime {
-    fn extract(dt: Borrowed<'_, '_, PyAny>) -> PyResult<NaiveDateTime> {
+    type Error = PyErr;
+
+    fn extract(dt: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         #[cfg(not(Py_LIMITED_API))]
         let dt = dt.downcast::<PyDateTime>()?;
         #[cfg(Py_LIMITED_API)]
@@ -477,7 +485,9 @@ impl<'py, Tz> FromPyObject<'_, 'py> for DateTime<Tz>
 where
     Tz: TimeZone + FromPyObjectOwned<'py>,
 {
-    fn extract(dt: Borrowed<'_, 'py, PyAny>) -> PyResult<DateTime<Tz>> {
+    type Error = PyErr;
+
+    fn extract(dt: Borrowed<'_, 'py, PyAny>) -> Result<Self, Self::Error> {
         #[cfg(not(Py_LIMITED_API))]
         let dt = dt.downcast::<PyDateTime>()?;
         #[cfg(Py_LIMITED_API)]
@@ -489,7 +499,7 @@ where
         let tzinfo: Option<Bound<'_, PyAny>> = dt.getattr(intern!(dt.py(), "tzinfo"))?.extract()?;
 
         let tz = if let Some(tzinfo) = tzinfo {
-            tzinfo.extract()?
+            tzinfo.extract().map_err(Into::into)?
         } else {
             return Err(PyTypeError::new_err(
                 "expected a datetime with non-None tzinfo",
@@ -560,11 +570,13 @@ impl<'py> IntoPyObject<'py> for &FixedOffset {
 }
 
 impl FromPyObject<'_, '_> for FixedOffset {
+    type Error = PyErr;
+
     /// Convert python tzinfo to rust [`FixedOffset`].
     ///
     /// Note that the conversion will result in precision lost in microseconds as chrono offset
     /// does not supports microseconds.
-    fn extract(ob: Borrowed<'_, '_, PyAny>) -> PyResult<FixedOffset> {
+    fn extract(ob: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         #[cfg(not(Py_LIMITED_API))]
         let ob = ob.downcast::<PyTzInfo>()?;
         #[cfg(Py_LIMITED_API)]
@@ -641,7 +653,9 @@ impl<'py> IntoPyObject<'py> for &Utc {
 }
 
 impl FromPyObject<'_, '_> for Utc {
-    fn extract(ob: Borrowed<'_, '_, PyAny>) -> PyResult<Utc> {
+    type Error = PyErr;
+
+    fn extract(ob: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         let py_utc = timezone_utc(ob.py());
         if ob.eq(py_utc)? {
             Ok(Utc)

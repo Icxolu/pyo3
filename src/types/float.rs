@@ -4,7 +4,7 @@ use crate::conversion::IntoPyObject;
 use crate::inspect::types::TypeInfo;
 use crate::{
     ffi, ffi_ptr_ext::FfiPtrExt, instance::Bound, Borrowed, FromPyObject, PyAny, PyErr, PyObject,
-    PyResult, Python,
+    Python,
 };
 #[allow(deprecated)]
 use crate::{IntoPy, ToPyObject};
@@ -127,9 +127,11 @@ impl<'py> IntoPyObject<'py> for &f64 {
 }
 
 impl<'py> FromPyObject<'_, 'py> for f64 {
+    type Error = PyErr;
+
     // PyFloat_AsDouble returns -1.0 upon failure
-    #![allow(clippy::float_cmp)]
-    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
+    #[allow(clippy::float_cmp)]
+    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> Result<Self, Self::Error> {
         // On non-limited API, .value() uses PyFloat_AS_DOUBLE which
         // allows us to have an optimized fast path for the case when
         // we have exactly a `float` object (it's not worth going through
@@ -204,8 +206,10 @@ impl<'py> IntoPyObject<'py> for &f32 {
     }
 }
 
-impl<'py> FromPyObject<'_, 'py> for f32 {
-    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> PyResult<Self> {
+impl<'a, 'py> FromPyObject<'a, 'py> for f32 {
+    type Error = <f64 as FromPyObject<'a, 'py>>::Error;
+
+    fn extract(obj: Borrowed<'_, 'py, PyAny>) -> Result<Self, Self::Error> {
         Ok(obj.extract::<f64>()? as f32)
     }
 

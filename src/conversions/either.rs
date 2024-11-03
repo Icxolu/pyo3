@@ -48,7 +48,7 @@
 use crate::inspect::types::TypeInfo;
 use crate::{
     conversion::IntoPyObject, exceptions::PyTypeError, Borrowed, Bound, BoundObject, FromPyObject,
-    PyAny, PyErr, PyObject, PyResult, Python,
+    PyAny, PyErr, PyObject, Python,
 };
 #[allow(deprecated)]
 use crate::{IntoPy, ToPyObject};
@@ -144,8 +144,10 @@ where
     L: FromPyObject<'a, 'py>,
     R: FromPyObject<'a, 'py>,
 {
+    type Error = PyErr;
+
     #[inline]
-    fn extract(obj: Borrowed<'a, 'py, PyAny>) -> PyResult<Self> {
+    fn extract(obj: Borrowed<'a, 'py, PyAny>) -> Result<Self, Self::Error> {
         if let Ok(l) = obj.extract::<L>() {
             Ok(Either::Left(l))
         } else if let Ok(r) = obj.extract::<R>() {

@@ -2134,6 +2134,7 @@ impl<'a> PyClassImplsBuilder<'a> {
                 impl<'a, 'py> #pyo3_path::impl_::extract_argument::PyFunctionArgument<'a, 'py> for &'a #cls
                 {
                     type Holder = ::std::option::Option<#pyo3_path::PyRef<'py, #cls>>;
+                    type Error = #pyo3_path::PyErr;
 
                     #[inline]
                     fn extract(obj: &'a #pyo3_path::Bound<'py, #pyo3_path::PyAny>, holder: &'a mut Self::Holder) -> #pyo3_path::PyResult<Self> {
@@ -2146,6 +2147,7 @@ impl<'a> PyClassImplsBuilder<'a> {
                 impl<'a, 'py> #pyo3_path::impl_::extract_argument::PyFunctionArgument<'a, 'py> for &'a #cls
                 {
                     type Holder = ::std::option::Option<#pyo3_path::PyRef<'py, #cls>>;
+                    type Error = #pyo3_path::PyErr;
 
                     #[inline]
                     fn extract(obj: &'a #pyo3_path::Bound<'py, #pyo3_path::PyAny>, holder: &'a mut Self::Holder) -> #pyo3_path::PyResult<Self> {
@@ -2156,6 +2158,7 @@ impl<'a> PyClassImplsBuilder<'a> {
                 impl<'a, 'py> #pyo3_path::impl_::extract_argument::PyFunctionArgument<'a, 'py> for &'a mut #cls
                 {
                     type Holder = ::std::option::Option<#pyo3_path::PyRefMut<'py, #cls>>;
+                    type Error =#pyo3_path::PyErr;
 
                     #[inline]
                     fn extract(obj: &'a #pyo3_path::Bound<'py, #pyo3_path::PyAny>, holder: &'a mut Self::Holder) -> #pyo3_path::PyResult<Self> {

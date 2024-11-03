@@ -4,7 +4,7 @@ use std::{borrow::Cow, convert::Infallible};
 use crate::inspect::types::TypeInfo;
 use crate::{
     conversion::IntoPyObject, instance::Bound, types::PyString, Borrowed, FromPyObject, Py, PyAny,
-    PyObject, PyResult, Python,
+    PyErr, PyObject, Python,
 };
 #[allow(deprecated)]
 use crate::{IntoPy, ToPyObject};
@@ -224,7 +224,9 @@ impl<'py> IntoPyObject<'py> for &String {
 
 #[cfg(any(Py_3_10, not(Py_LIMITED_API)))]
 impl<'a> crate::conversion::FromPyObject<'a, '_> for &'a str {
-    fn extract(ob: crate::Borrowed<'a, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(ob: crate::Borrowed<'a, '_, PyAny>) -> Result<Self, Self::Error> {
         ob.downcast::<PyString>()?.to_str()
     }
 
@@ -235,7 +237,9 @@ impl<'a> crate::conversion::FromPyObject<'a, '_> for &'a str {
 }
 
 impl<'a> crate::conversion::FromPyObject<'a, '_> for Cow<'a, str> {
-    fn extract(ob: crate::Borrowed<'a, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(ob: crate::Borrowed<'a, '_, PyAny>) -> Result<Self, Self::Error> {
         ob.downcast::<PyString>()?.to_cow()
     }
 
@@ -248,7 +252,9 @@ impl<'a> crate::conversion::FromPyObject<'a, '_> for Cow<'a, str> {
 /// Allows extracting strings from Python objects.
 /// Accepts Python `str` and `unicode` objects.
 impl FromPyObject<'_, '_> for String {
-    fn extract(obj: Borrowed<'_, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(obj: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         obj.downcast::<PyString>()?.to_cow().map(Cow::into_owned)
     }
 
@@ -259,7 +265,9 @@ impl FromPyObject<'_, '_> for String {
 }
 
 impl FromPyObject<'_, '_> for char {
-    fn extract(obj: Borrowed<'_, '_, PyAny>) -> PyResult<Self> {
+    type Error = PyErr;
+
+    fn extract(obj: Borrowed<'_, '_, PyAny>) -> Result<Self, Self::Error> {
         let s = obj.downcast::<PyString>()?.to_cow()?;
         let mut iter = s.chars();
         if let (Some(ch), None) = (iter.next(), iter.next()) {
