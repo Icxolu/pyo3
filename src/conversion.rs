@@ -394,7 +394,6 @@ where
 /// [`Cow<'a, str>`]: std::borrow::Cow
 /// [`Cow::Borrowed`]: std::borrow::Cow::Borrowed
 /// [`Cow::Owned`]: std::borrow::Cow::Owned
-
 pub trait FromPyObject<'a, 'py>: Sized {
     /// Extracts `Self` from the bound smart pointer `obj`.
     ///
