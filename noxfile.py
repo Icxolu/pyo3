@@ -414,7 +414,7 @@ def test_emscripten(session: nox.Session):
     session.env["CARGO_TARGET_WASM32_UNKNOWN_EMSCRIPTEN_RUNNER"] = "python " + str(
         info.emscripten_dir / "runner.py"
     )
-    session.env["RUSTFLAGS"] = " ".join(
+    rustflags = " ".join(
         [
             f"-L native={libdir}",
             "-C link-arg=--preload-file",
@@ -428,6 +428,8 @@ def test_emscripten(session: nox.Session):
             "-C link-arg=-sALLOW_MEMORY_GROWTH=1",
         ]
     )
+    session.env["RUSTFLAGS"] = rustflags
+    session.env["RUSTDOCFLAGS"] = rustflags
     session.env["CARGO_BUILD_TARGET"] = target
     session.env["PYO3_CROSS_LIB_DIR"] = pythonlibdir
     _run(session, "rustup", "target", "add", target, "--toolchain", "stable")
