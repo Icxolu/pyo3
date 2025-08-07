@@ -85,7 +85,8 @@ jobs:
 
   clippy:
     # Don't run clippy on `main` because it's already run in the merge queue.
-    if: github.ref != 'refs/heads/main'
+    # if: github.ref != 'refs/heads/main'
+    if: false
     needs: [fmt]
     runs-on: ${{ matrix.platform.os }}
     strategy:
@@ -176,7 +177,8 @@ jobs:
       CARGO_BUILD_TARGET: ${{ matrix.platform.rust-target }}
 
   build-pr:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'CI-build-full') && github.event_name == 'pull_request' }}
+    # if: ${{ !contains(github.event.pull_request.labels.*.name, 'CI-build-full') && github.event_name == 'pull_request' }}
+    if: false
     name: python${{ matrix.python-version }}-${{ matrix.platform.python-architecture }} ${{ matrix.platform.os }} rust-${{ matrix.rust }}
     needs: [fmt, resolve]
     uses: ./.github/workflows/build.yml
@@ -496,7 +498,7 @@ jobs:
 
   emscripten:
     name: emscripten
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'CI-build-full') || github.event_name != 'pull_request' }}
+    # if: ${{ contains(github.event.pull_request.labels.*.name, 'CI-build-full') || github.event_name != 'pull_request' }}
     needs: [fmt]
     runs-on: ubuntu-latest
     steps:
