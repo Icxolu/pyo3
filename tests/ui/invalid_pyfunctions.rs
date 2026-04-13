@@ -38,7 +38,7 @@ fn pass_module_but_no_arguments<'py>() {}
 #[pyfunction(pass_module)]
 fn first_argument_not_module<'a, 'py>(
     _string: &str,
-    //~^ ERROR: the trait bound `&str: From<BoundRef<'_, '_, pyo3::types::PyModule>>` is not satisfied
+    //~^ ERROR: the trait bound `&str: From<&pyo3::Bound<'_, pyo3::types::PyModule>>` is not satisfied
     module: &'a Bound<'py, PyModule>,
 ) -> PyResult<Bound<'py, PyString>> {
     module.name()

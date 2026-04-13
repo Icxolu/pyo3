@@ -71,6 +71,8 @@ fn main() {
         "pyo3/abi3-py314".to_string(),
         #[cfg(feature = "full")]
         "pyo3/full".to_string(),
+        #[cfg(feature = "experimental-async")]
+        "pyo3/experimental-async".to_string(),
     ];
 
     let mut deps_cargo = ui_test::CommandBuilder::cargo();
@@ -136,8 +138,24 @@ fn main() {
         #[cfg(feature = "experimental-async")]
         "invalid_async.rs".into(),
         // requires the async feature
-        #[cfg(not(feature = "experimental-async"))]
+        #[cfg(any(not(feature = "experimental-async"), Py_LIMITED_API))]
         "invalid_cancel_handle.rs".into(),
+        // adding extra error conversion impls changes the output
+        #[cfg(any(feature = "eyre", feature = "anyhow"))]
+        "invalid_result_conversion.rs".into(),
+        #[cfg(feature = "jiff-02")]
+        "invalid_pymethod_receiver.rs".into(),
+        #[cfg(feature = "uuid")]
+        "invalid_pyfunctions.rs".into(),
+    ]);
+
+    // differs on `experimental-async` feature
+    #[cfg(feature = "experimental-async")]
+    config.skip_files.extend([
+        "missing_intopy.rs".into(),
+        "invalid_pyclass_args".into(),
+        "invalid_pyfunction_argument".into(),
+        "invalid_property_args".into(),
     ]);
 
     // differs on `experimental-inspect` feature
@@ -153,6 +171,7 @@ fn main() {
         "invalid_pyclass_args.rs".into(),
         "invalid_property_args.rs".into(),
         "invalid_pyfunction_argument.rs".into(),
+        "invalid_cancel_handle.rs".into(),
     ]);
 
     // Normalize multiple trailing newlines to a single newline

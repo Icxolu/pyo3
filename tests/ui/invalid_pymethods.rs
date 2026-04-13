@@ -37,7 +37,7 @@ struct NotATypeObject;
 impl MyClass {
     #[classmethod]
     fn classmethod_wrong_first_argument(_t: NotATypeObject) -> Self {
-        //~^ ERROR: the trait bound `NotATypeObject: From<BoundRef<'_, '_, PyType>>` is not satisfied
+        //~^ ERROR: the trait bound `NotATypeObject: From<&pyo3::Bound<'_, PyType>>` is not satisfied
         Self {}
     }
 }
