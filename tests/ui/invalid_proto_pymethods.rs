@@ -17,7 +17,7 @@ struct MyClass {}
 impl MyClass {
     #[pyo3(name = "__truediv__")]
     fn truediv_expects_one_argument(&self) -> PyResult<()> {
-//~^ ERROR: Expected 1 arguments, got 0
+        //~^ ERROR: Expected 1 arguments, got 0
         Ok(())
     }
 }
@@ -26,7 +26,7 @@ impl MyClass {
 impl MyClass {
     #[pyo3(name = "__truediv__")]
     fn truediv_expects_one_argument_py(&self, _py: Python<'_>) -> PyResult<()> {
-//~^ ERROR: Expected 1 arguments, got 0
+        //~^ ERROR: Expected 1 arguments, got 0
         Ok(())
     }
 }
@@ -38,7 +38,7 @@ impl MyClass {
 #[pymethods]
 impl MyClass {
     #[pyo3(name = "__bool__", signature = ())]
-//~^ ERROR: `signature` cannot be used with magic method `__bool__`
+    //~^ ERROR: `signature` cannot be used with magic method `__bool__`
     fn signature_is_forbidden(&self) -> bool {
         true
     }
@@ -47,7 +47,7 @@ impl MyClass {
 #[pymethods]
 impl MyClass {
     #[pyo3(name = "__bool__", text_signature = "")]
-//~^ ERROR: `text_signature` cannot be used with magic method `__bool__`
+    //~^ ERROR: `text_signature` cannot be used with magic method `__bool__`
     fn text_signature_is_forbidden(&self) -> bool {
         true
     }

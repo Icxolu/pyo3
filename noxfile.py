@@ -201,6 +201,15 @@ def rustfmt(session: nox.Session):
     _run_cargo(session, "fmt", "--all", "--check")
     _run_cargo(session, "fmt", _FFI_CHECK, "--all", "--check")
     _format_ffi_extern(session, check=True)
+    # Check ui test formatting
+    _run(
+        session,
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        *[file for file in Path("tests/ui/").glob("*.rs")],
+    )
 
 
 @nox.session(name="ruff")

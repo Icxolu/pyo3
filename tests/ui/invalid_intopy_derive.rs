@@ -15,14 +15,14 @@ enum EmptyEnum {}
 #[derive(IntoPyObject, IntoPyObjectRef)]
 enum EnumWithEmptyTupleVar {
     EmptyTuple(),
-//~^ ERROR: cannot derive `IntoPyObject` for empty variants
+    //~^ ERROR: cannot derive `IntoPyObject` for empty variants
     Valid(String),
 }
 
 #[derive(IntoPyObject, IntoPyObjectRef)]
 enum EnumWithEmptyStructVar {
     EmptyStruct {},
-//~^ ERROR: cannot derive `IntoPyObject` for empty variants
+    //~^ ERROR: cannot derive `IntoPyObject` for empty variants
     Valid(String),
 }
 
@@ -40,7 +40,7 @@ struct EmptyTransparentStruct {}
 enum EnumWithTransparentEmptyTupleVar {
     #[pyo3(transparent)]
     EmptyTuple(),
-//~^ ERROR: cannot derive `IntoPyObject` for empty variants
+    //~^ ERROR: cannot derive `IntoPyObject` for empty variants
     Valid(String),
 }
 
@@ -48,7 +48,7 @@ enum EnumWithTransparentEmptyTupleVar {
 enum EnumWithTransparentEmptyStructVar {
     #[pyo3(transparent)]
     EmptyStruct {},
-//~^ ERROR: cannot derive `IntoPyObject` for empty variants
+    //~^ ERROR: cannot derive `IntoPyObject` for empty variants
     Valid(String),
 }
 
@@ -60,7 +60,7 @@ struct TransparentTupTooManyFields(String, String);
 #[derive(IntoPyObject, IntoPyObjectRef)]
 #[pyo3(transparent)]
 struct TransparentStructTooManyFields {
-//~^ ERROR: transparent structs and variants can only have 1 field
+    //~^ ERROR: transparent structs and variants can only have 1 field
     foo: String,
     bar: String,
 }
@@ -69,7 +69,7 @@ struct TransparentStructTooManyFields {
 enum EnumWithTransparentTupleTooMany {
     #[pyo3(transparent)]
     EmptyTuple(String, String),
-//~^ ERROR: transparent structs and variants can only have 1 field
+    //~^ ERROR: transparent structs and variants can only have 1 field
     Valid(String),
 }
 
@@ -77,7 +77,7 @@ enum EnumWithTransparentTupleTooMany {
 enum EnumWithTransparentStructTooMany {
     #[pyo3(transparent)]
     EmptyStruct {
-//~^ ERROR: transparent structs and variants can only have 1 field
+        //~^ ERROR: transparent structs and variants can only have 1 field
         foo: String,
         bar: String,
     },
@@ -93,14 +93,14 @@ struct UnknownContainerAttr {
 
 #[derive(IntoPyObject, IntoPyObjectRef)]
 union Union {
-//~^ ERROR: #[derive(`IntoPyObject`)] is not supported for unions
+    //~^ ERROR: #[derive(`IntoPyObject`)] is not supported for unions
     a: usize,
 }
 
 #[derive(IntoPyObject, IntoPyObjectRef)]
 enum UnitEnum {
     Unit,
-//~^ ERROR: cannot derive `IntoPyObject` for empty variants
+    //~^ ERROR: cannot derive `IntoPyObject` for empty variants
 }
 
 #[derive(IntoPyObject, IntoPyObjectRef)]
@@ -121,7 +121,7 @@ struct StructAttribute {
 #[pyo3(transparent)]
 struct StructTransparentItem {
     #[pyo3(item)]
-//~^ ERROR: `transparent` structs may not have `item` nor `attribute` for the inner field
+    //~^ ERROR: `transparent` structs may not have `item` nor `attribute` for the inner field
     foo: String,
 }
 
@@ -129,7 +129,7 @@ struct StructTransparentItem {
 #[pyo3(transparent)]
 struct StructTransparentIntoPyWith {
     #[pyo3(into_py_with = into)]
-//~^ ERROR: `into_py_with` is not permitted on `transparent` structs or variants
+    //~^ ERROR: `into_py_with` is not permitted on `transparent` structs or variants
     foo: String,
 }
 
@@ -137,7 +137,7 @@ struct StructTransparentIntoPyWith {
 #[pyo3(transparent)]
 struct StructTransparentIntoPyWithRef {
     #[pyo3(into_py_with = into_ref)]
-//~^ ERROR: `into_py_with` is not permitted on `transparent` structs or variants
+    //~^ ERROR: `into_py_with` is not permitted on `transparent` structs or variants
     foo: String,
 }
 
@@ -149,7 +149,7 @@ struct TupleTransparentIntoPyWith(#[pyo3(into_py_with = into)] String);
 #[derive(IntoPyObject)]
 enum EnumTupleIntoPyWith {
     TransparentTuple(#[pyo3(into_py_with = into)] usize),
-//~^ ERROR: `into_py_with` is not permitted on `transparent` structs
+    //~^ ERROR: `into_py_with` is not permitted on `transparent` structs
 }
 
 #[derive(IntoPyObject)]
@@ -157,7 +157,7 @@ enum EnumStructIntoPyWith {
     #[pyo3(transparent)]
     TransparentStruct {
         #[pyo3(into_py_with = into)]
-//~^ ERROR: `into_py_with` is not permitted on `transparent` structs or variants
+        //~^ ERROR: `into_py_with` is not permitted on `transparent` structs or variants
         a: usize,
     },
 }
@@ -177,7 +177,7 @@ struct StructTupleRenameAll(String, usize);
 #[derive(IntoPyObject, IntoPyObjectRef)]
 enum EnumTransparentVariantRenameAll {
     #[pyo3(rename_all = "camelCase")]
-//~^ ERROR: `rename_all` is not permitted on `transparent` structs and variants
+    //~^ ERROR: `rename_all` is not permitted on `transparent` structs and variants
     #[pyo3(transparent)]
     Variant { foo: String },
 }
@@ -185,7 +185,7 @@ enum EnumTransparentVariantRenameAll {
 #[derive(IntoPyObject, IntoPyObjectRef)]
 enum EnumTupleVariantRenameAll {
     #[pyo3(rename_all = "camelCase")]
-//~^ ERROR: `rename_all` is useless on tuple structs and variants.
+    //~^ ERROR: `rename_all` is useless on tuple structs and variants.
     Variant(String, usize),
 }
 

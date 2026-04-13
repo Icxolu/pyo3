@@ -7,7 +7,7 @@ mod probe_no_fields {
     use pyo3::prelude::*;
     #[pyclass]
     pub struct Probe {}
-    
+
     #[pymethods]
     impl Probe {
         #[new]
@@ -24,7 +24,7 @@ mod probe_with_fields {
     pub struct Probe {
         field: u8,
     }
-    
+
     #[pymethods]
     impl Probe {
         #[new]

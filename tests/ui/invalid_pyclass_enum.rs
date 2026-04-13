@@ -22,13 +22,13 @@ enum NoEmptyEnum {}
 enum NoUnitVariants {
     StructVariant { field: i32 },
     UnitVariant,
-//~^ ERROR: Unit variant `UnitVariant` is not yet supported in a complex enum
+    //~^ ERROR: Unit variant `UnitVariant` is not yet supported in a complex enum
 }
 
 #[pyclass]
 enum SimpleNoSignature {
     #[pyo3(constructor = (a, b))]
-//~^ ERROR: `constructor` can't be used on a simple enum variant
+    //~^ ERROR: `constructor` can't be used on a simple enum variant
     A,
     B,
 }
@@ -99,25 +99,25 @@ enum ComplexHashOptRequiresEq {
 #[pyclass(ord)]
 //~^ ERROR: The `ord` option requires the `eq` option.
 enum InvalidOrderedComplexEnum {
-    VariantA (i32),
-    VariantB { msg: String }
+    VariantA(i32),
+    VariantB { msg: String },
 }
 
-#[pyclass(eq,ord)]
+#[pyclass(eq, ord)]
 //~^ ERROR: binary operation `>` cannot be applied to type `&InvalidOrderedComplexEnum2`
 //~| ERROR: binary operation `<` cannot be applied to type `&InvalidOrderedComplexEnum2`
 //~| ERROR: binary operation `<=` cannot be applied to type `&InvalidOrderedComplexEnum2`
 //~| ERROR: binary operation `>=` cannot be applied to type `&InvalidOrderedComplexEnum2`
 #[derive(PartialEq)]
 enum InvalidOrderedComplexEnum2 {
-    VariantA (i32),
-    VariantB { msg: String }
+    VariantA(i32),
+    VariantB { msg: String },
 }
 
 #[pyclass(eq)]
 #[derive(PartialEq)]
 enum AllEnumVariantsDisabled {
-//~^ ERROR: #[pyclass] can't be used on enums without any variants - all variants of enum `AllEnumVariantsDisabled` have been configured out by cfg attributes
+    //~^ ERROR: #[pyclass] can't be used on enums without any variants - all variants of enum `AllEnumVariantsDisabled` have been configured out by cfg attributes
     #[cfg(any())]
     DisabledA,
     #[cfg(not(all()))]

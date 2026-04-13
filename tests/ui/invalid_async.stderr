@@ -1,7 +1,7 @@
 error: async functions are only supported with the `experimental-async` feature
  --> tests/ui/invalid_async.rs:4:1
   |
-4 | async fn check(){}
+4 | async fn check() {}
   | ^^^^^
 
 error: async functions are only supported with the `experimental-async` feature

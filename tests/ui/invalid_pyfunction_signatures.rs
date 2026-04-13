@@ -65,7 +65,7 @@ struct MyClass;
 #[pymethods]
 impl MyClass {
     #[pyo3(signature = (**kwargs, *, *args, x))]
-//~^ ERROR: expected argument from function definition `args` but got argument `kwargs`
+    //~^ ERROR: expected argument from function definition `args` but got argument `kwargs`
     fn multiple_errors_same_order(kwargs: Option<&PyDict>, args: &PyTuple, x: i32) {
         let _ = kwargs;
         let _ = args;
@@ -73,7 +73,7 @@ impl MyClass {
     }
 
     #[pyo3(signature = (**kwargs, *, *args, x))]
-//~^ ERROR: expected argument from function definition `x` but got argument `kwargs`
+    //~^ ERROR: expected argument from function definition `x` but got argument `kwargs`
     fn multiple_errors_different_order(args: &PyTuple, x: i32, kwargs: Option<&PyDict>) {
         let _ = kwargs;
         let _ = args;

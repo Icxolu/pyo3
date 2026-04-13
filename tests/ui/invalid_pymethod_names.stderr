@@ -5,27 +5,27 @@ error: `name` may only be specified once
    |              ^^^^^^
 
 error: `name` may only be specified once
-  --> tests/ui/invalid_pymethod_names.rs:19:12
+  --> tests/ui/invalid_pymethod_names.rs:21:12
    |
-19 |     #[pyo3(name = "bar")]
+21 |     #[pyo3(name = "bar")]
    |            ^^^^
 
 error: `name` not allowed with `#[new]`
-  --> tests/ui/invalid_pymethod_names.rs:26:19
+  --> tests/ui/invalid_pymethod_names.rs:30:19
    |
-26 |     #[pyo3(name = "makenew")]
+30 |     #[pyo3(name = "makenew")]
    |                   ^^^^^^^^^
 
 error: expected ident or string literal for property name
-  --> tests/ui/invalid_pymethod_names.rs:34:14
+  --> tests/ui/invalid_pymethod_names.rs:40:14
    |
-34 |     #[getter(1)]
+40 |     #[getter(1)]
    |              ^
 
 error: expected `#[getter(name)]` to set the name
-  --> tests/ui/invalid_pymethod_names.rs:41:14
+  --> tests/ui/invalid_pymethod_names.rs:49:14
    |
-41 |     #[getter = 1]
+49 |     #[getter = 1]
    |              ^
 
 error: aborting due to 5 previous errors

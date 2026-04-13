@@ -5,9 +5,9 @@ use pyo3::prelude::*;
 struct Foo;
 
 #[pyclass(set_all)]
-struct Foo2{
+struct Foo2 {
     #[pyo3(set)]
-//~^ ERROR: useless `set` - the struct is already annotated with `set_all`
+    //~^ ERROR: useless `set` - the struct is already annotated with `set_all`
     field: u8,
 }
 
@@ -16,9 +16,9 @@ struct Foo2{
 struct Foo3;
 
 #[pyclass(get_all)]
-struct Foo4{
+struct Foo4 {
     #[pyo3(get)]
-//~^ ERROR: useless `get` - the struct is already annotated with `get_all`
+    //~^ ERROR: useless `get` - the struct is already annotated with `get_all`
     field: u8,
 }
 
